@@ -1,0 +1,629 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Felipe & Perla | Vão Casar</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'sage-lightest': '#D4D9AD',
+                        'sage-light': '#B2BF95',
+                        'sage-medium': '#758C65',
+                        'sage-dark': '#3A5939',
+                        'sage-brand': '#427340',
+                        'cream': '#F9F6F0',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-image: url('https://www.pixelstalk.net/wp-content/uploads/image12/An-understated-green-background-for-iPhone-with-a-smooth-matte-texture-and-a-refined-solid-color-perfect-for-a-clean-and-aesthetic-look.jpg');
+            background-attachment: fixed;
+            background-position: center;
+            background-size: cover;
+        }
+        .content-card {
+            background-color: rgba(249, 246, 240, 0.85); /* cream with opacity */
+            border: 1px solid rgba(58, 89, 57, 0.1); /* sage-dark with opacity */
+        }
+         @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+            .content-card {
+                background-color: rgba(249, 246, 240, 0.75); /* more transparent for blur effect */
+                -webkit-backdrop-filter: blur(16px);
+                backdrop-filter: blur(16px);
+            }
+        }
+        .hidden {
+            display: none;
+        }
+        /* Scroll down indicator animation */
+        .scroll-down {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: pointer;
+            z-index: 10;
+        }
+        .scroll-down span {
+            display: block;
+            width: 24px;
+            height: 24px;
+            border-bottom: 3px solid #3A5939;
+            border-right: 3px solid #3A5939;
+            transform: rotate(45deg);
+            margin: -10px;
+            animation: scroll-animation 2s infinite;
+        }
+        @keyframes scroll-animation {
+            0% { opacity: 0; transform: rotate(45deg) translate(-20px, -20px); }
+            50% { opacity: 1; }
+            100% { opacity: 0; transform: rotate(45deg) translate(20px, 20px); }
+        }
+        /* Custom checkbox styles */
+        .custom-checkbox:checked {
+            background-color: #758C65;
+            border-color: #758C65;
+        }
+        .custom-checkbox:checked::after {
+            content: '✓';
+            color: white;
+            display: block;
+            text-align: center;
+            line-height: 1.25rem;
+            font-size: 1rem;
+        }
+        /* Animation for sections */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Timeline styles */
+        .timeline-item {
+            position: relative;
+        }
+        .timeline-item:not(:last-child)::before {
+            content: '';
+            position: absolute;
+            top: 1.2rem;
+            left: 0.65rem;
+            width: 2px;
+            height: calc(100% + 1rem); /* Extend line between items */
+            background-color: #B2BF95; /* sage-light */
+        }
+        .timeline-dot {
+            position: absolute;
+            top: 0.5rem;
+            left: 0;
+            width: 22px;
+            height: 22px;
+            background-color: #758C65; /* sage-medium */
+            border: 4px solid #F9F6F0; /* cream */
+            border-radius: 50%;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body class="font-sans text-sage-dark antialiased">
+    <div class="content-wrapper">
+        <main>
+            <!-- 1. Hero Section -->
+            <section id="home" class="min-h-screen flex flex-col items-center justify-center p-4 relative">
+                <div class="content-card shadow-2xl rounded-2xl p-8 md:p-12 text-center max-w-3xl w-full">
+                    <h2 class="font-serif text-4xl sm:text-5xl md:text-6xl text-sage-dark">Felipe & Perla</h2>
+                    <p class="text-lg md:text-xl mt-4 text-sage-medium font-serif max-w-xl mx-auto">Com a bênção de Deus e de nossos pais, convidamos você para celebrar o início da nossa história.</p>
+                    <p class="text-xl mt-8 text-sage-brand font-semibold">28 de Dezembro de 2025, às dezesseis e trinta</p>
+                    
+                    <div id="countdown" class="grid grid-cols-4 gap-4 mt-8 max-w-sm mx-auto">
+                        <div class="text-sage-dark">
+                            <span id="days" class="text-4xl font-bold">00</span>
+                            <span class="block text-sm">Dias</span>
+                        </div>
+                        <div class="text-sage-dark">
+                            <span id="hours" class="text-4xl font-bold">00</span>
+                            <span class="block text-sm">Horas</span>
+                        </div>
+                        <div class="text-sage-dark">
+                            <span id="minutes" class="text-4xl font-bold">00</span>
+                            <span class="block text-sm">Minutos</span>
+                        </div>
+                        <div class="text-sage-dark">
+                            <span id="seconds" class="text-4xl font-bold">00</span>
+                            <span class="block text-sm">Segundos</span>
+                        </div>
+                    </div>
+                    
+                    <a href="#rsvp-section" class="mt-12 inline-block bg-sage-brand text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-sage-dark transition-all transform hover:scale-105">
+                        Confirmar Presença
+                    </a>
+                </div>
+                 <a href="#promises" class="scroll-down"><span></span></a>
+            </section>
+
+             <!-- 2. Biblical Promises Section -->
+            <section id="promises" class="py-16 md:py-24 fade-in-section">
+                <div class="container mx-auto px-6 text-center content-card shadow-2xl rounded-2xl p-8 md:p-12">
+                    <h2 class="font-serif text-4xl md:text-5xl font-bold text-sage-dark">Promessas de Deus para Nós</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-sage-medium">Fundamentamos nossa união nas promessas do Senhor.</p>
+                    <div class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
+                        <div class="bg-cream/50 p-6 rounded-lg shadow-sm border border-sage-lightest transform hover:scale-105 transition-transform">
+                            <p class="text-sage-dark italic">"Assim, eles já não são dois, mas sim uma só carne. Portanto, o que Deus uniu, ninguém separe."</p>
+                            <p class="text-right mt-2 font-semibold text-sage-medium">Mateus 19:6</p>
+                        </div>
+                        <div class="bg-cream/50 p-6 rounded-lg shadow-sm border border-sage-lightest transform hover:scale-105 transition-transform">
+                            <p class="text-sage-dark italic">"O amor é paciente, o amor é bondoso. Não inveja, não se vangloria, não se orgulha."</p>
+                            <p class="text-right mt-2 font-semibold text-sage-medium">1 Coríntios 13:4</p>
+                        </div>
+                        <div class="bg-cream/50 p-6 rounded-lg shadow-sm border border-sage-lightest transform hover:scale-105 transition-transform">
+                            <p class="text-sage-dark italic">"Acima de tudo, porém, revistam-se do amor, que é o elo perfeito."</p>
+                            <p class="text-right mt-2 font-semibold text-sage-medium">Colossenses 3:14</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+             <!-- 3. Our Story Section -->
+            <section id="story" class="py-16 md:py-24 fade-in-section">
+                <div class="container mx-auto px-6 content-card shadow-2xl rounded-2xl p-8 md:p-12">
+                    <div class="text-center">
+                        <h2 class="font-serif text-4xl md:text-5xl font-bold text-sage-dark">Nossa História</h2>
+                        <p class="mt-4 max-w-2xl mx-auto text-sage-medium">Capítulos de uma história escrita por Deus.</p>
+                    </div>
+                    <div class="mt-12 max-w-2xl mx-auto space-y-8">
+                        <div class="timeline-item pl-12">
+                            <div class="timeline-dot"></div>
+                            <h3 class="font-serif text-2xl text-sage-brand">Onde tudo começou</h3>
+                            <p class="mt-2 text-sage-dark">Nossos caminhos se cruzaram de forma inesperada, mostrando que os melhores encontros não são planejados, mas divinamente orquestrados.</p>
+                        </div>
+                        <div class="timeline-item pl-12">
+                            <div class="timeline-dot"></div>
+                            <h3 class="font-serif text-2xl text-sage-brand">O Primeiro "Sim"</h3>
+                            <p class="mt-2 text-sage-dark">Um pedido de namoro, um coração acelerado e a certeza de que estávamos no início de uma jornada extraordinária. Foi ali que nossa história de amor começou a ser contada.</p>
+                        </div>
+                        <div class="timeline-item pl-12">
+                            <div class="timeline-dot"></div>
+                            <h3 class="font-serif text-2xl text-sage-brand">O Pedido</h3>
+                            <p class="mt-2 text-sage-dark">Sob um céu que testemunhou nosso amor, uma promessa foi feita. O pedido de casamento selou nosso compromisso e marcou o início do nosso "para sempre".</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. Location Section -->
+            <section id="location" class="py-16 md:py-24 fade-in-section">
+                 <div class="container mx-auto px-6 text-center content-card shadow-2xl rounded-2xl p-8 md:p-12">
+                     <h2 class="font-serif text-4xl md:text-5xl font-bold text-sage-dark">Cerimônia e Recepção</h2>
+                     <p class="mt-4 max-w-2xl mx-auto text-sage-medium">Celebraremos nosso amor no mesmo local da cerimônia. Um lugar especial onde nossas vidas se tornarão uma.</p>
+                     <div class="mt-10 max-w-4xl mx-auto">
+                        <p class="text-xl font-semibold text-sage-brand">Fazenda Mosquito - Riacho Seco</p>
+                        <p class="text-md text-sage-dark">Curaçá - BA, Casa de De Assis</p>
+                         <a href="https://maps.app.goo.gl/6zuurw4tDaWoWE1Z9" target="_blank" rel="noopener noreferrer" class="mt-8 inline-block bg-sage-brand text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-sage-dark transition-colors">
+                             SAIBA COMO CHEGAR
+                         </a>
+                     </div>
+                 </div>
+            </section>
+
+            <!-- 5. RSVP, Gifts, Finalize Section Container -->
+            <section id="rsvp-section" class="py-16 md:py-24 fade-in-section">
+                <div class="container mx-auto px-6 text-center content-card shadow-2xl rounded-2xl p-8 md:p-12">
+                    
+                    <!-- Step 1: RSVP Form -->
+                    <div id="rsvp-content">
+                        <h2 class="font-serif text-4xl md:text-5xl font-bold text-sage-dark">Confirme sua Presença</h2>
+                        <p class="mt-4 max-w-xl mx-auto text-sage-medium">Sua presença neste dia tão especial é o maior presente que poderíamos receber. Por favor, confirme até 01 de Dezembro de 2025.</p>
+                        <form id="confirmation-form" class="mt-10 max-w-lg mx-auto text-left space-y-6">
+                             <div>
+                                <label for="fullName" class="block text-sm font-medium text-sage-dark">Nome Completo</label>
+                                <input type="text" id="fullName" name="fullName" required class="mt-1 block w-full px-4 py-2 bg-cream/50 border border-sage-light rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sage-brand focus:border-transparent">
+                            </div>
+                            <div>
+                                <label for="guests" class="block text-sm font-medium text-sage-dark">Quantidade de Acompanhantes</label>
+                                <input type="number" id="guests" name="guests" min="0" value="0" required class="mt-1 block w-full px-4 py-2 bg-cream/50 border border-sage-light rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sage-brand focus:border-transparent">
+                            </div>
+                             <fieldset>
+                                <legend class="block text-sm font-medium text-sage-dark">Precisará de hospedagem?</legend>
+                                <div class="mt-2 flex items-center gap-x-8">
+                                    <div class="flex items-center">
+                                        <input id="hospedagem-sim" name="hospedagem" type="radio" value="sim" required class="h-4 w-4 border-gray-300 text-sage-brand focus:ring-sage-brand">
+                                        <label for="hospedagem-sim" class="ml-3 block text-sm font-medium leading-6 text-sage-dark">Sim</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input id="hospedagem-nao" name="hospedagem" type="radio" value="nao" required class="h-4 w-4 border-gray-300 text-sage-brand focus:ring-sage-brand">
+                                        <label for="hospedagem-nao" class="ml-3 block text-sm font-medium leading-6 text-sage-dark">Não</label>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <div class="text-center pt-4">
+                               <button type="submit" class="w-full md:w-auto bg-sage-brand text-white font-bold py-3 px-12 rounded-xl shadow-lg hover:bg-sage-dark transition-transform transform hover:scale-105">
+                                    Continuar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Step 2: Gift Choice -->
+                    <div id="gift-choice" class="hidden">
+                        <h2 class="font-serif text-4xl md:text-5xl font-bold text-sage-dark">Seu carinho em forma de presente</h2>
+                        <p class="mt-4 max-w-2xl mx-auto text-sage-medium">Sua presença já nos alegra imensamente. Se desejar nos presentear, ficaremos muito gratos. Escolha uma das opções abaixo.</p>
+                        <div class="mt-10 flex flex-col md:flex-row justify-center items-center gap-6">
+                            <button id="show-gift-list-btn" class="w-full md:w-auto bg-sage-brand text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-sage-dark transition-transform transform hover:scale-105">Ver Lista de Presentes</button>
+                            <button id="show-pix-btn" class="w-full md:w-auto bg-sage-brand text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-sage-dark transition-transform transform hover:scale-105">Presentear com PIX</button>
+                            <button id="surprise-btn" class="w-full md:w-auto bg-sage-light text-sage-dark font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-sage-medium transition-colors hover:text-white">Apenas Confirmar Presença</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2a: Gift List Section -->
+                    <div id="presentes-content" class="hidden">
+                        <h2 class="font-serif text-4xl md:text-5xl font-bold text-sage-dark">Lista de Presentes</h2>
+                        <p class="mt-4 max-w-2xl mx-auto text-sage-medium">Selecione um ou mais itens que deseja nos presentear. Agradecemos imensamente seu carinho!</p>
+                        <div id="gift-list-container" class="mt-12 max-w-4xl mx-auto text-left space-y-8">
+                            <!-- Gift categories and items will be rendered here by JS -->
+                        </div>
+                         <div class="mt-12 text-center">
+                            <button id="finalize-gift-selection-btn" class="w-full md:w-auto bg-sage-brand text-white font-bold py-3 px-12 rounded-xl shadow-lg hover:bg-sage-dark transition-transform transform hover:scale-105">
+                                Confirmar Presentes e Finalizar
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2b: PIX Section -->
+                    <div id="pix-content" class="hidden">
+                        <h2 class="font-serif text-4xl md:text-5xl font-bold text-sage-dark">Presentear com PIX</h2>
+                        <p class="mt-4 max-w-2xl mx-auto text-sage-medium">Seu presente nos ajudará a construir nosso futuro juntos. Muito obrigado!</p>
+                        <div class="mt-10 bg-cream/50 p-6 rounded-xl shadow-md border border-sage-lightest text-center max-w-md mx-auto">
+                            <p class="text-lg text-sage-dark">Chave PIX (Celular):</p>
+                            <p id="pix-key" class="text-2xl font-mono font-bold my-2 text-sage-brand">8792032864</p>
+                            <p class="text-md text-sage-medium">Favorecido: ANDRÉ FELIPE DE SÁ LOPES</p>
+                            <button id="copy-pix-btn" class="mt-6 bg-sage-brand text-white font-semibold py-2 px-6 rounded-lg hover:bg-sage-dark transition-colors">
+                                Copiar Chave PIX
+                            </button>
+                        </div>
+                    </div>
+
+
+                    <!-- Step 3: Finalize Section -->
+                    <div id="finalizar" class="hidden">
+                        <h2 class="font-serif text-4xl md:text-5xl font-bold text-sage-dark">Confirmação Enviada!</h2>
+                        <p class="mt-4 max-w-xl mx-auto text-sage-medium">Agradecemos de coração por confirmar sua presença! Para finalizar, por favor, envie a mensagem pré-pronta no WhatsApp. Mal podemos esperar para celebrar com você!</p>
+                        <div class="mt-12">
+                             <a id="whatsapp-btn" href="#" target="_blank" rel="noopener noreferrer" class="inline-block bg-green-600 text-white font-bold py-4 px-10 rounded-xl shadow-lg hover:bg-green-700 transition-transform transform hover:scale-105 text-lg">
+                                Confirmar no WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- DATA ---
+            const rsvpData = {
+                name: '',
+                guests: 0,
+                lodging: '', // 'sim' or 'nao'
+                selectedGifts: [],
+                giftType: '' // 'list', 'pix', 'none'
+            };
+            const listaPresentes = [
+                { id: 1, categoria: "Utensílios de Cozinha", nome: "Jogo de panelas básico" },
+                { id: 2, categoria: "Utensílios de Cozinha", nome: "Jogo de panelas básico" },
+                { id: 3, categoria: "Utensílios de Cozinha", nome: "Jogo de panelas básico" },
+                { id: 4, categoria: "Utensílios de Cozinha", nome: "Jogo de Frigideira antiaderente" },
+                { id: 5, categoria: "Utensílios de Cozinha", nome: "Panela de pressão pequena" },
+                { id: 6, categoria: "Utensílios de Cozinha", nome: "Panela de pressão média" },
+                { id: 7, categoria: "Utensílios de Cozinha", nome: "Panela de pressão grande" },
+                { id: 8, categoria: "Utensílios de Cozinha", nome: "Jogo de copos (4 und)" },
+                { id: 9, categoria: "Utensílios de Cozinha", nome: "Jogo de copos (4 und)" },
+                { id: 10, categoria: "Utensílios de Cozinha", nome: "Jogo de copos (4 und)" },
+                { id: 11, categoria: "Utensílios de Cozinha", nome: "Conjunto de pratos (4 und)" },
+                { id: 12, categoria: "Utensílios de Cozinha", nome: "Conjunto de pratos (4 und)" },
+                { id: 13, categoria: "Utensílios de Cozinha", nome: "Conjunto de pratos (4 und)" },
+                { id: 14, categoria: "Utensílios de Cozinha", nome: "Jogo de talheres (4 und)" },
+                { id: 15, categoria: "Utensílios de Cozinha", nome: "Jogo de talheres (4 und)" },
+                { id: 16, categoria: "Utensílios de Cozinha", nome: "Jogo de talheres (4 und)" },
+                { id: 17, categoria: "Utensílios de Cozinha", nome: "Jogo de xícaras (4 und)" },
+                { id: 18, categoria: "Utensílios de Cozinha", nome: "Travessa de vidro (Pequena)" },
+                { id: 19, categoria: "Utensílios de Cozinha", nome: "Travessa de vidro (Média)" },
+                { id: 20, categoria: "Utensílios de Cozinha", nome: "Travessa de vidro (Grande)" },
+                { id: 21, categoria: "Utensílios de Cozinha", nome: "Travessa de vidro (Grande)" },
+                { id: 22, categoria: "Utensílios de Cozinha", nome: "Conjunto de potes para mantimentos (Pequeno)" },
+                { id: 23, categoria: "Utensílios de Cozinha", nome: "Conjunto de potes para mantimentos (Grande)" },
+                { id: 24, categoria: "Utensílios de Cozinha", nome: "Escorredor de louça" },
+                { id: 25, categoria: "Utensílios de Cozinha", nome: "Kit de Panos de prato (4 und)" },
+                { id: 26, categoria: "Utensílios de Cozinha", nome: "Tábua de corte" },
+                { id: 27, categoria: "Utensílios de Cozinha", nome: "Avental e pegador de panela (kit)" },
+                { id: 28, categoria: "Utensílios de Cozinha", nome: "Garrafa térmica de Chá" },
+                { id: 29, categoria: "Utensílios de Cozinha", nome: "Jogo de assadeiras (2 und)" },
+                { id: 30, categoria: "Utensílios de Cozinha", nome: "Jogo de assadeiras (2 und)" },
+                { id: 31, categoria: "Utensílios de Cozinha", nome: "Forma de bolo redonda" },
+                { id: 32, categoria: "Utensílios de Cozinha", nome: "Jogo de colheres e utensílios de silicone" },
+                { id: 33, categoria: "Utensílios de Cozinha", nome: "Jogo de vasilhas de plásticos (Pequeno)" },
+                { id: 34, categoria: "Utensílios de Cozinha", nome: "Jogo de vasilhas de plásticos (Médio)" },
+                { id: 35, categoria: "Utensílios de Cozinha", nome: "Jogo de vasilhas de plásticos (Grande)" },
+                { id: 36, categoria: "Utensílios de Cozinha", nome: "Jarra para suco" },
+                { id: 37, categoria: "Utensílios de Cozinha", nome: "Conjunto para sobremesas (4 und)" },
+                { id: 38, categoria: "Utensílios de Cozinha", nome: "Jarra para suco" },
+                { id: 39, categoria: "Utensílios de Cozinha", nome: "Jogo de temperos com suporte" },
+                { id: 40, categoria: "Utensílios de Cozinha", nome: "Filtro de barro grande" },
+                { id: 41, categoria: "Quarto", nome: "Jogo de lençol casal extra king" },
+                { id: 42, categoria: "Quarto", nome: "Jogo de lençol casal extra king" },
+                { id: 43, categoria: "Quarto", nome: "Jogo de lençol casal extra king" },
+                { id: 44, categoria: "Quarto", nome: "Jogo de lençol casal" },
+                { id: 45, categoria: "Quarto", nome: "Jogo de lençol casal" },
+                { id: 46, categoria: "Quarto", nome: "Jogo de lençol casal" },
+                { id: 47, categoria: "Quarto", nome: "Jogo de Travesseiros (2 und)" },
+                { id: 48, categoria: "Quarto", nome: "Jogo de Travesseiros (2 und)" },
+                { id: 49, categoria: "Quarto", nome: "Jogo de Protetor de travesseiros branco (2 und)" },
+                { id: 50, categoria: "Quarto", nome: "Jogo de Protetor de travesseiros branco (2 und)" },
+                { id: 51, categoria: "Quarto", nome: "Jogo de Protetor de travesseiros branco (2 und)" },
+                { id: 52, categoria: "Quarto", nome: "Colcha de cama de casal" },
+                { id: 53, categoria: "Quarto", nome: "Colcha de cama de casal" },
+                { id: 54, categoria: "Quarto", nome: "Capa de sofá" },
+                { id: 55, categoria: "Quarto", nome: "Almofadas (par)" },
+                { id: 56, categoria: "Quarto", nome: "Almofadas (par)" },
+                { id: 57, categoria: "Quarto", nome: "Cortina simples para quarto" },
+                { id: 58, categoria: "Quarto", nome: "Cortina simples para quarto" },
+                { id: 59, categoria: "Quarto", nome: "Cortina simples para quarto" },
+                { id: 60, categoria: "Quarto", nome: "Cortina simples para sala" },
+                { id: 61, categoria: "Quarto", nome: "Protetor de colchão extra king" },
+                { id: 62, categoria: "Quarto", nome: "Protetor de colchão de casal" },
+                { id: 63, categoria: "Banheiro", nome: "Kit de Toalha de banho (2 und)" },
+                { id: 64, categoria: "Banheiro", nome: "Kit de Toalha de banho (2 und)" },
+                { id: 65, categoria: "Banheiro", nome: "Kit de Toalha de banho (2 und)" },
+                { id: 66, categoria: "Banheiro", nome: "Kit de Toalha de rosto (2 und)" },
+                { id: 67, categoria: "Banheiro", nome: "Kit de Toalha de rosto (2 und)" },
+                { id: 68, categoria: "Banheiro", nome: "Cesto para roupas sujas" },
+                { id: 69, categoria: "Banheiro", nome: "Tábua de passar roupa dobrável" },
+                { id: 70, categoria: "Banheiro", nome: "Conjunto de Cabides (10 und)" },
+                { id: 71, categoria: "Utilidades e Decoração", nome: "Caixa organizadora (pequena)" },
+                { id: 72, categoria: "Utilidades e Decoração", nome: "Caixa organizadora (média)" },
+                { id: 73, categoria: "Utilidades e Decoração", nome: "Caixa organizadora (grande)" },
+                { id: 74, categoria: "Utilidades e Decoração", nome: "Tapete de entrada / capacho" },
+                { id: 75, categoria: "Utilidades e Decoração", nome: "Kit tapete de banheiro" },
+                { id: 76, categoria: "Utilidades e Decoração", nome: "Kit tapete de banheiro" },
+                { id: 77, categoria: "Utilidades e Decoração", nome: "Porta-retratos ou quadro simples" },
+                { id: 78, categoria: "Utilidades e Decoração", nome: "Toalha de mesa (Quadrada)" },
+                { id: 79, categoria: "Utilidades e Decoração", nome: "Toalha de mesa (Retangular)" },
+                { id: 80, categoria: "Utilidades e Decoração", nome: "Toalha de mesa (Retangular)" },
+                { id: 81, categoria: "Eletrodomésticos", nome: "Liquidificador" },
+                { id: 82, categoria: "Eletrodomésticos", nome: "Ferro de passar roupa" },
+                { id: 83, categoria: "Eletrodomésticos", nome: "Batedeira" },
+                { id: 84, categoria: "Eletrodomésticos", nome: "Espremedor de laranja" },
+                { id: 85, categoria: "Eletrodomésticos", nome: "Processador de temperos" },
+                { id: 86, categoria: "Eletrodomésticos", nome: "Ventilador" },
+                { id: 87, categoria: "Eletrodomésticos", nome: "Ventilador" }
+            ];
+
+            // --- ELEMENT SELECTORS ---
+            const rsvpForm = document.getElementById('confirmation-form');
+            const rsvpContent = document.getElementById('rsvp-content');
+            const giftChoiceSection = document.getElementById('gift-choice');
+            const presentesSection = document.getElementById('presentes-content');
+            const pixSection = document.getElementById('pix-content');
+            const finalizarSection = document.getElementById('finalizar');
+            const giftListContainer = document.getElementById('gift-list-container');
+            const copyPixBtn = document.getElementById('copy-pix-btn');
+            const surpriseBtn = document.getElementById('surprise-btn');
+            const showGiftListBtn = document.getElementById('show-gift-list-btn');
+            const showPixBtn = document.getElementById('show-pix-btn');
+            const finalizeGiftSelectionBtn = document.getElementById('finalize-gift-selection-btn');
+            const whatsappBtn = document.getElementById('whatsapp-btn');
+
+            // --- DYNAMIC ANIMATIONS ---
+            const sections = document.querySelectorAll('.fade-in-section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            // --- COUNTDOWN ---
+            const countdownDate = new Date('2025-12-28T16:30:00-03:00').getTime();
+            const countdownInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = countdownDate - now;
+
+                if (distance < 0) {
+                    clearInterval(countdownInterval);
+                    document.getElementById('countdown').innerHTML = "<p class='col-span-4 text-2xl'>O grande dia chegou!</p>";
+                    return;
+                }
+
+                document.getElementById('days').innerText = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
+                document.getElementById('hours').innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+                document.getElementById('minutes').innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+                document.getElementById('seconds').innerText = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
+            }, 1000);
+
+            // --- FLOW CONTROL & LOGIC ---
+            function hideAllSteps() {
+                rsvpContent.classList.add('hidden');
+                giftChoiceSection.classList.add('hidden');
+                presentesSection.classList.add('hidden');
+                pixSection.classList.add('hidden');
+                finalizarSection.classList.add('hidden');
+            }
+            
+            function proceedToFinalStep() {
+                generateWppLink();
+                hideAllSteps();
+                finalizarSection.classList.remove('hidden');
+                finalizarSection.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            function generateWppLink() {
+                const base = "https://api.whatsapp.com/send?phone=5535997758389&text=";
+                let message = `Olá! Confirmo minha presença no casamento de Felipe & Perla.\n\nNome: ${rsvpData.name}\nAcompanhantes: ${rsvpData.guests}\nPrecisará de hospedagem: ${rsvpData.lodging === 'sim' ? 'Sim' : 'Não'}`;
+
+                if (rsvpData.giftType === 'list' && rsvpData.selectedGifts.length > 0) {
+                    const giftNames = rsvpData.selectedGifts.map(gift => `\n- ${gift.nome}`).join('');
+                    message += `\n\nPresentes escolhidos:${giftNames}`;
+                } else if (rsvpData.giftType === 'pix') {
+                    message += `\n\nOptei por presentear via PIX.`;
+                }
+
+                whatsappBtn.href = base + encodeURIComponent(message);
+            }
+            
+            function renderGiftList() {
+                const reservedGifts = JSON.parse(localStorage.getItem('fp_reservedGifts')) || [];
+                const giftsByCategory = listaPresentes.reduce((acc, gift) => {
+                    (acc[gift.categoria] = acc[gift.categoria] || []).push(gift);
+                    return acc;
+                }, {});
+
+                giftListContainer.innerHTML = '';
+                for (const category in giftsByCategory) {
+                    const categoryDiv = document.createElement('div');
+                    
+                    const categoryTitle = document.createElement('h4');
+                    categoryTitle.className = 'font-serif text-xl text-sage-dark mb-4';
+                    categoryTitle.textContent = category;
+                    categoryDiv.appendChild(categoryTitle);
+
+                    const itemsGrid = document.createElement('div');
+                    itemsGrid.className = 'grid grid-cols-1 md:grid-cols-2 gap-4';
+                    
+                    giftsByCategory[category].forEach(gift => {
+                        const isReserved = reservedGifts.includes(gift.id);
+                        const card = document.createElement('label');
+                        card.className = `p-4 rounded-lg flex justify-between items-center transition-colors cursor-pointer ${isReserved ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-cream shadow-sm border border-sage-lightest hover:bg-sage-lightest'}`;
+                        
+                        const leftDiv = document.createElement('div');
+                        leftDiv.className = 'flex items-center';
+
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.dataset.giftId = gift.id;
+                        checkbox.dataset.giftName = gift.nome;
+                        checkbox.className = 'custom-checkbox h-5 w-5 mr-4 rounded border-sage-light text-sage-medium focus:ring-sage-brand appearance-none';
+                        checkbox.disabled = isReserved;
+                        
+                        const giftName = document.createElement('span');
+                        giftName.textContent = gift.nome;
+
+                        leftDiv.appendChild(checkbox);
+                        leftDiv.appendChild(giftName);
+                        card.appendChild(leftDiv);
+
+                        if (isReserved) {
+                            const reservedText = document.createElement('span');
+                            reservedText.className = 'font-semibold text-sm';
+                            reservedText.textContent = 'JÁ ESCOLHIDO';
+                            card.appendChild(reservedText);
+                        }
+                        itemsGrid.appendChild(card);
+                    });
+                    categoryDiv.appendChild(itemsGrid);
+                    giftListContainer.appendChild(categoryDiv);
+                }
+            }
+
+            // --- EVENT LISTENERS ---
+            rsvpForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const formData = new FormData(rsvpForm);
+                rsvpData.name = formData.get('fullName');
+                rsvpData.guests = formData.get('guests');
+                rsvpData.lodging = formData.get('hospedagem');
+
+                if (rsvpData.name && rsvpData.guests !== null && rsvpData.lodging) {
+                    hideAllSteps();
+                    giftChoiceSection.classList.remove('hidden');
+                    giftChoiceSection.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert('Por favor, preencha todos os campos.');
+                }
+            });
+
+            showGiftListBtn.addEventListener('click', () => {
+                hideAllSteps();
+                presentesSection.classList.remove('hidden');
+                renderGiftList();
+                presentesSection.scrollIntoView({behavior: 'smooth'});
+            });
+
+            showPixBtn.addEventListener('click', () => {
+                hideAllSteps();
+                pixSection.classList.remove('hidden');
+                pixSection.scrollIntoView({behavior: 'smooth'});
+            });
+
+            surpriseBtn.addEventListener('click', () => {
+                rsvpData.giftType = 'none';
+                proceedToFinalStep();
+            });
+
+            finalizeGiftSelectionBtn.addEventListener('click', () => {
+                const selectedCheckboxes = giftListContainer.querySelectorAll('input[type="checkbox"]:checked');
+                if (selectedCheckboxes.length === 0) {
+                    alert('Por favor, selecione ao menos um presente ou volte para escolher outra opção.');
+                    return;
+                }
+                
+                let reservedGifts = JSON.parse(localStorage.getItem('fp_reservedGifts')) || [];
+                rsvpData.selectedGifts = [];
+
+                selectedCheckboxes.forEach(checkbox => {
+                    const giftId = parseInt(checkbox.dataset.giftId, 10);
+                    if (!reservedGifts.includes(giftId)) {
+                        reservedGifts.push(giftId);
+                        rsvpData.selectedGifts.push({id: giftId, nome: checkbox.dataset.giftName});
+                    }
+                });
+
+                localStorage.setItem('fp_reservedGifts', JSON.stringify(reservedGifts));
+                rsvpData.giftType = 'list';
+                proceedToFinalStep();
+            });
+
+            copyPixBtn.addEventListener('click', () => {
+                const pixKey = document.getElementById('pix-key').innerText;
+                navigator.clipboard.writeText(pixKey).then(() => {
+                    copyPixBtn.textContent = 'Copiado!';
+                    setTimeout(() => { copyPixBtn.textContent = 'Copiar Chave PIX'; }, 2000);
+                    
+                    rsvpData.giftType = 'pix';
+                    setTimeout(proceedToFinalStep, 500);
+                }).catch(err => {
+                    alert('Falha ao copiar a chave PIX.');
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>
