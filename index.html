@@ -31,6 +31,10 @@
             }
         }
     </script>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <style>
         body {
@@ -322,6 +326,29 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
+            // --- FIREBASE SETUP ---
+            const firebaseConfig = {
+              apiKey: "AIzaSyAx3nHPPsh_it_XaL4OSlDKV3yzkejIdNA",
+              authDomain: "felipe-perla.firebaseapp.com",
+              projectId: "felipe-perla",
+              storageBucket: "felipe-perla.firebasestorage.app",
+              messagingSenderId: "430861045822",
+              appId: "1:430861045822:web:45f96379c2ed88f764c16f",
+              measurementId: "G-N8RYFTBVX4"
+            };
+
+            // Initialize Firebase
+            try {
+                firebase.initializeApp(firebaseConfig);
+                const db = firebase.firestore();
+                console.log("Firebase initialized successfully.");
+            } catch (e) {
+                console.error("Firebase initialization failed. Please check your configuration.", e);
+                // Optionally disable gift list functionality if Firebase fails
+                document.getElementById('show-gift-list-btn').style.display = 'none';
+            }
+
+
             // --- DATA ---
             const rsvpData = {
                 name: '',
@@ -498,8 +525,12 @@
                 whatsappBtn.href = base + encodeURIComponent(message);
             }
             
-            function renderGiftList() {
-                const reservedGifts = JSON.parse(localStorage.getItem('fp_reservedGifts')) || [];
+            async function renderGiftList() {
+                const db = firebase.firestore();
+                const docRef = db.collection('giftState').doc('reservedIds');
+                const docSnap = await docRef.get();
+                const reservedGifts = docSnap.exists ? docSnap.data().ids : [];
+
                 const giftsByCategory = listaPresentes.reduce((acc, gift) => {
                     (acc[gift.categoria] = acc[gift.categoria] || []).push(gift);
                     return acc;
@@ -572,7 +603,11 @@
             showGiftListBtn.addEventListener('click', () => {
                 hideAllSteps();
                 presentesSection.classList.remove('hidden');
-                renderGiftList();
+                giftListContainer.innerHTML = '<p class="text-sage-medium">Carregando lista de presentes...</p>';
+                renderGiftList().catch(err => {
+                    console.error("Erro ao carregar a lista de presentes:", err);
+                    giftListContainer.innerHTML = '<p class="text-red-500 font-semibold">Não foi possível carregar a lista. Verifique se a configuração do Firebase está correta ou tente novamente mais tarde.</p>';
+                });
                 presentesSection.scrollIntoView({behavior: 'smooth'});
             });
 
@@ -587,28 +622,56 @@
                 proceedToFinalStep();
             });
 
-            finalizeGiftSelectionBtn.addEventListener('click', () => {
+            finalizeGiftSelectionBtn.addEventListener('click', async () => {
                 const selectedCheckboxes = giftListContainer.querySelectorAll('input[type="checkbox"]:checked');
                 if (selectedCheckboxes.length === 0) {
                     alert('Por favor, selecione ao menos um presente ou volte para escolher outra opção.');
                     return;
                 }
+
+                const giftsToReserve = Array.from(selectedCheckboxes).map(cb => ({
+                    id: parseInt(cb.dataset.giftId, 10),
+                    nome: cb.dataset.giftName
+                }));
                 
-                let reservedGifts = JSON.parse(localStorage.getItem('fp_reservedGifts')) || [];
-                rsvpData.selectedGifts = [];
+                const db = firebase.firestore();
+                const docRef = db.collection('giftState').doc('reservedIds');
 
-                selectedCheckboxes.forEach(checkbox => {
-                    const giftId = parseInt(checkbox.dataset.giftId, 10);
-                    if (!reservedGifts.includes(giftId)) {
-                        reservedGifts.push(giftId);
-                        rsvpData.selectedGifts.push({id: giftId, nome: checkbox.dataset.giftName});
-                    }
-                });
+                finalizeGiftSelectionBtn.disabled = true;
+                finalizeGiftSelectionBtn.textContent = 'Reservando...';
 
-                localStorage.setItem('fp_reservedGifts', JSON.stringify(reservedGifts));
-                rsvpData.giftType = 'list';
-                proceedToFinalStep();
+                try {
+                    await db.runTransaction(async (transaction) => {
+                        const doc = await transaction.get(docRef);
+                        const reservedIds = doc.exists && doc.data().ids ? doc.data().ids : [];
+                        
+                        const newlySelectedIds = giftsToReserve.map(g => g.id);
+                        const conflicts = newlySelectedIds.filter(id => reservedIds.includes(id));
+
+                        if (conflicts.length > 0) {
+                            const conflictNames = listaPresentes.filter(g => conflicts.includes(g.id)).map(g => g.nome).join(', ');
+                            throw new Error(`Oops! O(s) item(ns) "${conflictNames}" foi/foram escolhido(s) por outra pessoa. Por favor, atualize a lista e escolha outros itens.`);
+                        }
+                        
+                        const newReservedIds = [...new Set([...reservedIds, ...newlySelectedIds])]; // Use Set to ensure uniqueness
+                        transaction.set(docRef, { ids: newReservedIds }, { merge: true });
+                        
+                        rsvpData.selectedGifts = giftsToReserve;
+                    });
+                    
+                    // If transaction is successful
+                    rsvpData.giftType = 'list';
+                    proceedToFinalStep();
+
+                } catch (e) {
+                    alert(e.message || "Ocorreu um erro ao reservar os presentes. Por favor, tente novamente.");
+                    renderGiftList(); // Re-render the list to show the updated status
+                } finally {
+                    finalizeGiftSelectionBtn.disabled = false;
+                    finalizeGiftSelectionBtn.textContent = 'Confirmar Presentes e Finalizar';
+                }
             });
+
 
             copyPixBtn.addEventListener('click', () => {
                 const pixKey = document.getElementById('pix-key').innerText;
