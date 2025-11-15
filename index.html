@@ -128,6 +128,60 @@
             border-radius: 50%;
             z-index: 1;
         }
+
+        /* --- INTERACTIVE STYLES --- */
+
+        /* Click Ripple Effect */
+        .click-ripple {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: rgba(58, 89, 57, 0.4); /* sage-dark with opacity */
+            transform: translate(-50%, -50%) scale(0);
+            animation: ripple 600ms linear;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        @keyframes ripple {
+            to {
+                transform: translate(-50%, -50%) scale(10);
+                opacity: 0;
+            }
+        }
+
+        /* Music Toggle Button */
+        #music-toggle {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 50px;
+            height: 50px;
+            background-color: #758C65; /* sage-medium */
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            z-index: 1000;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        #music-toggle:hover {
+            background-color: #3A5939; /* sage-dark */
+            transform: scale(1.1);
+        }
+        #music-toggle svg {
+            width: 28px;
+            height: 28px;
+        }
+        .hidden-icon {
+            display: none;
+        }
     </style>
 </head>
 <body class="font-sans text-sage-dark antialiased">
@@ -138,7 +192,7 @@
                 <div class="content-card shadow-2xl rounded-2xl p-8 md:p-12 text-center max-w-3xl w-full">
                     <h2 class="font-serif text-4xl sm:text-5xl md:text-6xl text-sage-dark">Felipe & Perla</h2>
                     <p class="text-lg md:text-xl mt-4 text-sage-medium font-serif max-w-xl mx-auto">Com a bênção de Deus e de nossos pais, convidamos você para celebrar o início da nossa história.</p>
-                    <p class="text-xl mt-8 text-sage-brand font-semibold">28 de Dezembro de 2025, às dezesseis e trinta</p>
+                    <p class="text-xl mt-8 text-sage-brand font-semibold">28 de Dezembro de 2025, às 16:30h</p>
                     
                     <div id="countdown" class="grid grid-cols-4 gap-4 mt-8 max-w-sm mx-auto">
                         <div class="text-sage-dark">
@@ -322,6 +376,17 @@
             </section>
         </main>
     </div>
+
+    <audio id="bg-music" loop src="https://cdn.pixabay.com/audio/2023/10/05/audio_555b174e31.mp3"></audio>
+    <button id="music-toggle" aria-label="Tocar/Pausar música">
+        <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+        </svg>
+        <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="hidden-icon">
+            <path d="M5.75 4.5a.75.75 0 00-.75.75v10.5a.75.75 0 001.5 0V5.25a.75.75 0 00-.75-.75zM14.25 4.5a.75.75 0 00-.75.75v10.5a.75.75 0 001.5 0V5.25a.75.75 0 00-.75-.75z" />
+        </svg>
+    </button>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -683,6 +748,62 @@
                     setTimeout(proceedToFinalStep, 500);
                 }).catch(err => {
                     alert('Falha ao copiar a chave PIX.');
+                });
+            });
+
+            // --- INTERACTIVE FEATURES ---
+
+            // --- MUSIC PLAYER ---
+            const bgMusic = document.getElementById('bg-music');
+            const musicToggleBtn = document.getElementById('music-toggle');
+            const playIcon = document.getElementById('play-icon');
+            const pauseIcon = document.getElementById('pause-icon');
+            let hasInteracted = false;
+
+            function toggleMusic() {
+                if (bgMusic.paused) {
+                    bgMusic.play().then(() => {
+                        playIcon.classList.add('hidden-icon');
+                        pauseIcon.classList.remove('hidden-icon');
+                    }).catch(error => console.log("Autoplay blocked:", error));
+                } else {
+                    bgMusic.pause();
+                    playIcon.classList.remove('hidden-icon');
+                    pauseIcon.classList.add('hidden-icon');
+                }
+            }
+
+            musicToggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                hasInteracted = true;
+                toggleMusic();
+            });
+
+            // Attempt to play music on first user interaction to comply with autoplay policies
+            document.body.addEventListener('click', () => {
+                if (!hasInteracted) {
+                    hasInteracted = true;
+                    bgMusic.play().then(() => {
+                        playIcon.classList.add('hidden-icon');
+                        pauseIcon.classList.remove('hidden-icon');
+                    }).catch(error => console.log("Autoplay was prevented. User needs to click the music button."));
+                }
+            }, { once: true });
+
+            // --- CLICK RIPPLE EFFECT ---
+            document.addEventListener('click', e => {
+                // Don't show ripple on certain interactive elements that have their own feedback
+                if (e.target.closest('button, a, input[type="checkbox"], input[type="radio"]')) return;
+
+                const ripple = document.createElement('div');
+                ripple.className = 'click-ripple';
+                document.body.appendChild(ripple);
+
+                ripple.style.left = `${e.clientX}px`;
+                ripple.style.top = `${e.clientY}px`;
+
+                ripple.addEventListener('animationend', () => {
+                    ripple.remove();
                 });
             });
 
